@@ -10,7 +10,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.stick       = wpilib.Joystick(1)
         self.left_motor  = wpilib.Spark(0)
         self.right_motor = wpilib.Spark(1)
-        self.robot_drive = wpilib.RobotDrive(right_motor, left_motor)
+        self.robot_drive = wpilib.RobotDrive(self.right_motor, self.left_motor)
+
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
