@@ -7,7 +7,7 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         should be used for any initialization code.
         """
-        self.stick       = wpilib.Joystick(1)
+        self.stick       = wpilib.Joystick(0)
         self.left_motor  = wpilib.Spark(0)
         self.right_motor = wpilib.Spark(1)
         self.robot_drive = wpilib.RobotDrive(self.right_motor, self.left_motor)
