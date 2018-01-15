@@ -30,14 +30,14 @@ class DriveTrain:
     def set_motors(self, potencia_izq, potencia_der):
         pass
 
-    def driveWithJoystick(self, stick):
+    def drive_with_joystick(self, stick):
         pass
 
-    def driveWithDpad(self, stick):
+    def drive_with_pad(self, stick):
         pass
 
-    def driveWithHeading(self, heading, gatillo):
+    def drive_with_heading(self, heading, gatillo):
         pass
 
-    def getGatillo(self, stick):
+    def get_gatillo(self, stick):
         pass
