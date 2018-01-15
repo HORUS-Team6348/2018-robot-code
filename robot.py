@@ -1,7 +1,8 @@
 import wpilib
+import wpilib.drive
+from drivetrain import DriveTrain
 
 class MyRobot(wpilib.IterativeRobot):
-
     def robotInit(self):
         """
         This function is called upon program startup and
@@ -10,30 +11,27 @@ class MyRobot(wpilib.IterativeRobot):
         self.stick       = wpilib.Joystick(0)
         self.left_motor  = wpilib.Spark(0)
         self.right_motor = wpilib.Spark(1)
-        self.robot_drive = wpilib.RobotDrive(self.right_motor, self.left_motor)
+
+        self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
+
+        self.elevator_main_motor = None
+        self.elevator_secondary_motor = None
+
+        self.gyro = None
 
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-        self.auto_loop_counter = 0
+        pass
 
     def autonomousPeriodic(self):
-        """This function is called periodically during autonomous."""
-
-        # Check if we've completed 100 loops (approximately 2 seconds)
-        if self.auto_loop_counter < 100:
-            self.robot_drive.drive(-0.5, 0) # Drive forwards at half speed
-            self.auto_loop_counter += 1
-        else:
-            self.robot_drive.drive(0, 0)    #Stop robot
+        """This function is called periodically during autonomous mode."""
+        pass
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
-        self.robot_drive.arcadeDrive(self.stick)
+        self.drivetrain.drive(self.stick)
 
-    def testPeriodic(self):
-        """This function is called periodically during test mode."""
-        wpilib.LiveWindow.run()
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
