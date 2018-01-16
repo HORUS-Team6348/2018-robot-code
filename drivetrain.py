@@ -55,7 +55,7 @@ class DriveTrain:
         else:
             return 0
 
-    def get_left_motor_dpad(self, pad, gatillo):
+    def get_right_motor_dpad(self, pad, gatillo):
         if pad == 0:
             return -1 * gatillo
         elif pad == 45:
@@ -75,8 +75,8 @@ class DriveTrain:
         else:
             return 0
 
-    def toDegrees(self, angrad):
-        degrees = self.toDegrees(angrad)
+    def to_degrees(self, angrad):
+        degrees = math.degrees(angrad)
         if degrees < 0:
             return -degrees
         else:
@@ -86,12 +86,18 @@ class DriveTrain:
         self.set_motors(0,0)
 
     def drive(self, stick):
+        wpilib.SmartDashboard.putNumber("POV value", stick.getPOV())
         if stick.getPOV() != -1:
             self.drive_with_pad(stick)
+            wpilib.SmartDashboard.putString("Pad or stick", "Pad")
         else:
             self.drive_with_joystick(stick)
+            wpilib.SmartDashboard.putString("Pad or stick", "Stick")
 
     def set_motors(self, left_power, right_power):
+        wpilib.SmartDashboard.putNumber("Left motor value", left_power)
+        wpilib.SmartDashboard.putNumber("Right motor value", right_power)
+
         self.left_motor.set(left_power)
         self.right_motor.set(right_power)
 
@@ -110,6 +116,9 @@ class DriveTrain:
         radians = math.atan2(y, x)
         heading = self.to_degrees(radians)
 
+        wpilib.SmartDashboard.putNumber("Heading", heading)
+        wpilib.SmartDashboard.putNumber("Trigger", trigger)
+
         self.drive_with_heading(heading, trigger)
 
     def drive_with_pad(self, stick: wpilib.Joystick):
@@ -122,8 +131,8 @@ class DriveTrain:
         self.set_motors(left_power, right_motor)
 
     def drive_with_heading(self, heading, trigger):
-        left_power  = self.get_left_motor_dpad(heading, trigger)
-        right_motor = self.get_right_motor_dpad(heading, trigger)
+        left_power  = self.get_left_motor(heading, trigger)
+        right_motor = self.get_right_motor(heading, trigger)
 
         self.set_motors(left_power, right_motor)
 
