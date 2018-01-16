@@ -128,7 +128,7 @@ class DriveTrain:
         left_power  = self.get_left_motor(dpad, trigger)
         right_motor = self.get_right_motor(dpad, trigger)
 
-        self.set_motors(left_power, right_motor)
+        self.set_motors(left_power, -right_motor)
 
     def drive_with_heading(self, heading, trigger):
         left_power  = self.get_left_motor(heading, trigger)
