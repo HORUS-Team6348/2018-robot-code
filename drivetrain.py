@@ -35,7 +35,7 @@ class DriveTrain:
         else:
             return 0
 
-    def get_left_motor_Dpad(self, pad, gatillo):
+    def get_left_motor_dpad(self, pad, gatillo):
         if pad == 0:
             return gatillo
         elif pad == 45:
@@ -55,7 +55,7 @@ class DriveTrain:
         else:
             return 0
 
-    def getMotorDerDpad(self, pad, gatillo):
+    def get_left_motor_dpad(self, pad, gatillo):
         if pad == 0:
             return -1 * gatillo
         elif pad == 45:
@@ -76,20 +76,20 @@ class DriveTrain:
             return 0
 
     def toDegrees(self, angrad):
-        degrees = math.toDegrees(angrad)
+        degrees = self.toDegrees(angrad)
         if degrees < 0:
             return -degrees
         else:
             return 360 - degrees
 
     def stop(self):
-        set_motors(0,0)
+        self.set_motors(0,0)
 
     def drive(self, stick):
         if stick.getPOV() != -1:
-            driveDpad(stick)
+            self.drive_with_pad(stick)
         else:
-            driveStick(stick)
+            self.drive_with_joystick(stick)
 
     def set_motors(self, left_power, right_power):
         self.left_motor.set(left_power)
@@ -116,14 +116,14 @@ class DriveTrain:
         trigger = self.get_trigger(stick)
         dpad    = stick.getPOV()
 
-        left_power  = get_left_motor(dpad, trigger)
-        right_motor = get_right_motor(dpad, trigger)
+        left_power  = self.get_left_motor(dpad, trigger)
+        right_motor = self.get_right_motor(dpad, trigger)
 
         self.set_motors(left_power, right_motor)
 
     def drive_with_heading(self, heading, trigger):
-        left_power  = get_left_motor_dpad(heading, trigger)
-        right_motor = get_right_motor_dpad(heading, trigger)
+        left_power  = self.get_left_motor_dpad(heading, trigger)
+        right_motor = self.get_right_motor_dpad(heading, trigger)
 
         self.set_motors(left_power, right_motor)
 
