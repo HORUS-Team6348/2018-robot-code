@@ -7,16 +7,53 @@ class DriveTrain:
         self.right_motor = right_motor
 
     def smoothBetween(self, min, max, degrees):
-        pass
+        interval = max - min
+        normalized = (max - degrees) / interval
+        return 2 * normalized - 1
 
-    def getMotorIzq(self, degrees, gatillo):
-        pass
+    def get_left_motor(self, degrees, gatillo):
+        if degrees <= 90:
+            return gatillo
+        elif degrees <= 180:
+            return self.smoothBetween(90, 180, degrees) * gatillo
+        elif degrees <= 270:
+            return -1 * gatillo
+        elif degrees <= 360:
+            return self.smoothBetween(360, 270, degrees) * gatillo
+        else:
+            return 0
 
-    def getMotorDer(self, degrees, gatillo):
-        pass
+    def get_right_motor(self, degrees, gatillo):
+        if degrees <= 90:
+            return -1 * self.smoothBetween(90, 0, degrees) * gatillo
+        elif degrees <= 180:
+            return -1 * gatillo
+        elif degrees <= 270:
+            return -1 * self.smoothBetween(180, 270, degrees) * gatillo
+        elif degrees <= 360:
+            return gatillo
+        else:
+            return 0
 
-    def getMotorIzqDpad(self, pad, gatillo):
-        pass
+    def get_left_motor_Dpad(self, pad, gatillo):
+        if pad == 0:
+            return gatillo
+        elif pad == 45:
+            return gatillo
+        elif pad == 90:
+            return gatillo
+        elif pad == 135:
+            return -1 * gatillo
+        elif pad == 180:
+            return -1 * gatillo
+        elif pad == 225:
+            return 0 * gatillo
+        elif pad == 270:
+            return -1 * gatillo
+        elif pad == 315:
+            return 0 * gatillo
+        else:
+            return 0
 
     def getMotorDerDpad(self, pad, gatillo):
         if pad == 0:
