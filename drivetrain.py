@@ -1,7 +1,8 @@
 import math
+import wpilib
 
 class DriveTrain:
-    def __init__(self, left_motor, right_motor):
+    def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController):
         self.left_motor = left_motor
         self.right_motor = right_motor
 
