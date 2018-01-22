@@ -20,7 +20,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.elevator_secondary_motor = wpilib.Spark(3)
 
         self.gyro = wpilib.ADXRS450_Gyro()
-        self.gyro.calibrate()
         self.auto = None
 
 
