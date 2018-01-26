@@ -27,7 +27,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-        game_specific_message = wpilib.DriverStation.getInstance().getgetGameSpecificMessage()
+        game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
         robot_position        = wpilib.SmartDashboard.getString("Robot position: ", "none")
 
         if robot_position == "center":
