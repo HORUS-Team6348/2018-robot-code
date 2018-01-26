@@ -1,35 +1,36 @@
 import math
 import wpilib
 
+
+def smooth_between(self, min, max, degrees):
+    interval = max - min
+    normalized = (max - degrees) / interval
+    return 2 * normalized - 1
+
 class DriveTrain:
     def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController):
         self.left_motor = left_motor
         self.right_motor = right_motor
 
-    def smoothBetween(self, min, max, degrees):
-        interval = max - min
-        normalized = (max - degrees) / interval
-        return 2 * normalized - 1
-
     def get_left_motor(self, degrees, gatillo):
         if degrees <= 90:
             return gatillo
         elif degrees <= 180:
-            return self.smoothBetween(90, 180, degrees) * gatillo
+            return smooth_between(90, 180, degrees) * gatillo
         elif degrees <= 270:
             return -1 * gatillo
         elif degrees <= 360:
-            return self.smoothBetween(360, 270, degrees) * gatillo
+            return smooth_between(360, 270, degrees) * gatillo
         else:
             return 0
 
     def get_right_motor(self, degrees, gatillo):
         if degrees <= 90:
-            return -1 * self.smoothBetween(90, 0, degrees) * gatillo
+            return -1 * smooth_between(90, 0, degrees) * gatillo
         elif degrees <= 180:
             return -1 * gatillo
         elif degrees <= 270:
-            return -1 * self.smoothBetween(180, 270, degrees) * gatillo
+            return -1 * smooth_between(180, 270, degrees) * gatillo
         elif degrees <= 360:
             return gatillo
         else:
