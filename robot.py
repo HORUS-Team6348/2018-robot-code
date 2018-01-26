@@ -2,7 +2,7 @@ import wpilib
 import wpilib.drive
 from drivetrain import DriveTrain
 from climber import Climber
-import autos
+import autos.issuer as autos
 
 
 class MyRobot(wpilib.IterativeRobot):
@@ -29,14 +29,15 @@ class MyRobot(wpilib.IterativeRobot):
         """This function is run once each time the robot enters autonomous mode."""
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
         robot_position        = wpilib.SmartDashboard.getString("Robot position: ", "none")
+        delay                 = wpilib.SmartDashboard.getNumber("Delay: ", 5)
 
         if robot_position == "center":
-            delay = wpilib.SmartDashboard.getNumber("Delay: ", 5)
             direction = wpilib.SmartDashboard.getString("Direction", "right")
+
             if direction == "right":
-                self.auto = autos.center_right()
+                self.auto = autos.center_right(delay)
             else:
-                self.auto = autos.center_left()
+                self.auto = autos.center_left(delay)
 
         elif robot_position == "right":
             if game_specific_message == "RRR":
@@ -49,7 +50,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auto = autos.right_switch()
 
             else:
-                self.auto = autos.cross()
+                self.auto = autos.cross(delay)
 
         else:
             if game_specific_message == "LLL":
@@ -62,7 +63,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auto = autos.left_switch()
 
             else:
-                self.auto = autos.cross()
+                self.auto = autos.cross(delay)
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
