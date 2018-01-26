@@ -85,7 +85,7 @@ class DriveTrain:
     def stop(self):
         self.set_motors(0,0)
 
-    def drive(self, stick):
+    def drive(self, stick: wpilib.Joystick):
         wpilib.SmartDashboard.putNumber("POV value", stick.getPOV())
         if stick.getPOV() != -1:
             self.drive_with_pad(stick)
