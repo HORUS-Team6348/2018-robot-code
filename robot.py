@@ -32,7 +32,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         if robot_position == "center":
             delay = wpilib.SmartDashboard.getNumber("Delay: ", 5)
-            direction =wpilib.SmartDashboard.getString("Direction", "right")
+            direction = wpilib.SmartDashboard.getString("Direction", "right")
             if direction == "right":
                 self.auto = autos.center_right()
             else:
@@ -45,7 +45,7 @@ class MyRobot(wpilib.IterativeRobot):
             elif game_specific_message =="LRL":
                 self.auto = autos.right_scale()
 
-            elif game_specific_message = "RLR":
+            elif game_specific_message == "RLR":
                 self.auto = autos.right_switch()
 
             else:
@@ -58,7 +58,7 @@ class MyRobot(wpilib.IterativeRobot):
             elif game_specific_message == "RLR":
                 self.auto = autos.left_scale()
 
-            elif game_specific_message = "LRL":
+            elif game_specific_message == "LRL":
                 self.auto = autos.left_switch()
 
             else:
