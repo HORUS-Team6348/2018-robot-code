@@ -2,7 +2,7 @@ import math
 import wpilib
 
 
-def smooth_between(self, min, max, degrees):
+def smooth_between(min, max, degrees):
     interval = max - min
     normalized = (max - degrees) / interval
     return 2 * normalized - 1
