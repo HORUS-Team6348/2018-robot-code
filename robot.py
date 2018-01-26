@@ -1,6 +1,7 @@
 import wpilib
 import wpilib.drive
 from drivetrain import DriveTrain
+from climber import Climber
 import autos
 
 
@@ -10,14 +11,15 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         should be used for any initialization code.
         """
-        self.stick       = wpilib.Joystick(0)
-        self.left_motor  = wpilib.Spark(0)
-        self.right_motor = wpilib.Spark(1)
+        self.xbox_stick   = wpilib.Joystick(0)
+        self.flight_stick = wpilib.Joystick(1)
+
+        self.left_motor     = wpilib.Spark(0)
+        self.right_motor    = wpilib.Spark(1)
+        self.elevator_motor = wpilib.Spark(2)
 
         self.drivetrain  = DriveTrain(self.left_motor, self.right_motor)
-
-        self.elevator_main_motor      = wpilib.Spark(2)
-        self.elevator_secondary_motor = wpilib.Spark(3)
+        self.climber     = Climber(self.elevator_motor)
 
         self.gyro = wpilib.ADXRS450_Gyro()
         self.auto = None
@@ -68,7 +70,8 @@ class MyRobot(wpilib.IterativeRobot):
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
-        self.drivetrain.drive(self.stick)
+        self.drivetrain.drive(self.xbox_stick)
+        self.climber.climb(self.flight_stick)
         wpilib.SmartDashboard.putNumber("Gyro", self.gyro.getAngle())
 
 
