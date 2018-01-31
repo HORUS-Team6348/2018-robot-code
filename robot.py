@@ -21,6 +21,21 @@ class MyRobot(wpilib.IterativeRobot):
         self.drivetrain  = DriveTrain(self.left_motor, self.right_motor)
         self.climber     = Climber(self.elevator_motor)
 
+        self.auto_chooser = wpilib.SendableChooser()
+        self.auto_chooser.addDefault("Right", "right")
+        self.auto_chooser.addObject("Center", "center")
+        self.auto_chooser.addObject("Left", "left")
+
+        self.delay_chooser = wpilib.SendableChooser()
+        self.delay_chooser.addDefault("0 seconds", 0)
+        self.delay_chooser.addObject("2.5 seconds", 2.5)
+        self.delay_chooser.addObject("5 seconds", 5)
+        self.delay_chooser.addObject("7.5 seconds", 7.5)
+        self.delay_chooser.addObject("10 seconds", 10)
+
+        wpilib.SmartDashboard.putData(self.auto_chooser)
+        wpilib.SmartDashboard.putData(self.delay_chooser)
+
         self.gyro = wpilib.ADXRS450_Gyro()
         self.auto = None
 
@@ -28,8 +43,8 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
-        robot_position        = wpilib.SmartDashboard.getString("Robot position: ", "none")
-        delay                 = wpilib.SmartDashboard.getNumber("Delay: ", 5)
+        robot_position        = self.auto_chooser.getSelected()
+        delay                 = self.delay_chooser.getSelected()
 
         if robot_position == "center":
             direction = wpilib.SmartDashboard.getString("Direction", "right")
@@ -67,13 +82,12 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
-        pass
+        self.drivetrain.drive_with_pid(90, self.gyro, 0.4)
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         self.drivetrain.drive(self.xbox_stick)
         self.climber.climb(self.flight_stick)
-        wpilib.SmartDashboard.putNumber("Gyro", self.gyro.getAngle())
 
 
 if __name__ == "__main__":
