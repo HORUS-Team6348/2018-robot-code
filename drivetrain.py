@@ -1,4 +1,4 @@
-import math
+  import math
 import wpilib
 
 
@@ -8,9 +8,14 @@ def smooth_between(min, max, degrees):
     return 2 * normalized - 1
 
 class DriveTrain:
-    def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController):
+    def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController, kP=0, kI=0):
         self.left_motor = left_motor
         self.right_motor = right_motor
+
+        self.kP = kP
+        self.kI = kI
+
+        self.integral_history = 0
 
     def get_left_motor(self, degrees, gatillo):
         if degrees <= 90:
@@ -101,6 +106,22 @@ class DriveTrain:
 
         self.left_motor.set(left_power)
         self.right_motor.set(right_power)
+
+    def drive_with_pid(self, goal: int, gyro: wpilib.ADXRS450_Gyro, trigger: int):
+        angle = gyro.getAngle() - 90
+        error = angle - goal
+
+        self.integral_history += error * 0.020
+
+        prop = self.kP * error
+        intg = self.kI * self.integral_history
+
+        output = prop + intg + 90
+
+        wpilib.SmartDashboard.putNumber("PID error", error)
+        wpilib.SmartDashboard.putNumber("PID output", output)
+
+        self.drive_with_heading(output, trigger)
 
     def drive_with_joystick(self, stick: wpilib.Joystick):
         trigger = self.get_trigger(stick)
