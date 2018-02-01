@@ -18,7 +18,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.right_motor    = wpilib.Spark(1)
         self.elevator_motor = wpilib.Spark(2)
 
-        self.drivetrain  = DriveTrain(self.left_motor, self.right_motor)
+        self.drivetrain  = DriveTrain(self.left_motor, self.right_motor, kP=0.1544, kI=0.6915)
         self.climber     = Climber(self.elevator_motor)
 
         self.auto_chooser = wpilib.SendableChooser()
@@ -38,10 +38,14 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.gyro = wpilib.ADXRS450_Gyro()
         self.auto = None
-
+        self.auto_timer = wpilib.Timer()
+        self.auto_debug = ""
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
+        self.drivetrain.auto_quick_calibration = self.gyro.getAngle()
+        self.auto_timer.start()
+
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
         robot_position        = self.auto_chooser.getSelected()
         delay                 = self.delay_chooser.getSelected()
@@ -82,7 +86,10 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
-        self.drivetrain.drive_with_pid(90, self.gyro, 0.4)
+        debug = self.drivetrain.drive_with_pid(90, self.gyro, 0.3)
+
+        self.auto_debug += f"{self.auto_timer.get()}, {debug}aa"
+        wpilib.SmartDashboard.putString("Auto debug", self.auto_debug)
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
