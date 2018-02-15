@@ -8,12 +8,9 @@ def smooth_between(min, max, degrees):
     return 2 * normalized - 1
 
 class DriveTrain:
-    def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController, kP=1, kI=0):
+    def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController):
         self.left_motor = left_motor
         self.right_motor = right_motor
-
-        self.kP = kP
-        self.kI = kI
 
         self.integral_history = 0
         self.auto_quick_calibration = 0
@@ -109,13 +106,16 @@ class DriveTrain:
         self.right_motor.set(right_power)
 
     def drive_with_pid(self, goal: int, gyro: wpilib.ADXRS450_Gyro, trigger: float):
+        kP = 0.1544
+        kI = 0.6915
+
         angle = gyro.getAngle() - self.auto_quick_calibration
         error = angle - (goal - 90)
 
         self.integral_history += error * 0.020
 
-        prop = self.kP * error
-        intg = self.kI * self.integral_history
+        prop = kP * error
+        intg = kI * self.integral_history
 
         output = prop + intg
 
@@ -133,7 +133,35 @@ class DriveTrain:
         else:
             self.set_motors(trigger, -1 * (trigger + output))
 
-        return f"{angle}, {error}, {output}"
+    def turn_with_pid(self, goal: int,gyro: wpilib.ADXRS450_Gyro):
+        kP = 0.06948
+        kI = 0.149724707
+
+        angle = gyro.getAngle() - self.auto_quick_calibration
+        error = angle - (goal - 90)
+
+        self.integral_history += error * 0.020
+
+        prop = kP * error
+        intg = kI * self.integral_history
+
+        output = prop + intg
+
+        if output > 0.5:
+            output = 0.5
+        elif output < -0.5:
+            output = -0.5
+
+        wpilib.SmartDashboard.putNumber("PID error", error)
+        wpilib.SmartDashboard.putNumber("PID output", output)
+
+        if output > 0:
+            self.set_motors(-output, -output)
+        else:
+            self.set_motors(-output, -output)
+
+        return f"{output}, {error}"
+
 
     def drive_with_joystick(self, stick: wpilib.Joystick):
         trigger = self.get_trigger(stick)
