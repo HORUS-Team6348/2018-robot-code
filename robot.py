@@ -2,6 +2,7 @@ import wpilib
 import wpilib.drive
 from drivetrain import DriveTrain
 from climber import Climber
+from arm import CubeArm
 import autos.issuer as autos
 
 
@@ -14,16 +15,17 @@ class MyRobot(wpilib.IterativeRobot):
         self.xbox_stick   = wpilib.Joystick(0)
         self.flight_stick = wpilib.Joystick(1)
 
-        self.left_motor     = wpilib.Spark(0)
-        self.right_motor    = wpilib.Spark(1)
-        self.elevator_motor = wpilib.Spark(2)
-        self.arm_motor      = wpilib.Spark(3)
+        self.arm_motor      = wpilib.Spark(0)
+        self.elevator_motor = wpilib.Spark(1)
+        self.right_motor    = wpilib.Spark(2)
+        self.left_motor     = wpilib.Spark(3)
 
-        self.left_encoder  = wpilib.Encoder(0, 1, True, wpilib.Encoder.EncodingType.k4X)
-        self.right_encoder = wpilib.Encoder(2, 3, True, wpilib.Encoder.EncodingType.k4X)
+        self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
+        self.left_encoder = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
 
         self.drivetrain  = DriveTrain(self.left_motor, self.right_motor)
         self.climber     = Climber(self.elevator_motor)
+        self.cube_arm    = CubeArm(self.arm_motor)
 
         self.auto_chooser = wpilib.SendableChooser()
         self.auto_chooser.addDefault("Right", "right")
@@ -93,15 +95,20 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
-        self.drivetrain.drive_with_heading(90, 0.3)
+        wpilib.SmartDashboard.putNumber("Left encoder", self.left_encoder.get())
+        wpilib.SmartDashboard.putNumber("Right encoder", self.right_encoder.get())
+        wpilib.SmartDashboard.putNumber("Timer", self.auto_timer.get())
+        self.drivetrain.turn_with_pid(36, self.gyro)
+
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         wpilib.SmartDashboard.putNumber("Left encoder", self.left_encoder.get())
         wpilib.SmartDashboard.putNumber("Right encoder", self.right_encoder.get())
-        self.drivetrain.drive(self.xbox_stick)
-        self.climber.climb(self.flight_stick)
 
+        self.drivetrain.drive(self.xbox_stick)
+        self.cube_arm.drive(self.flight_stick)
+        self.climber.climb(self.flight_stick)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
