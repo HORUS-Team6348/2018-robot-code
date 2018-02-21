@@ -99,8 +99,8 @@ class DriveTrain:
             self.drive_with_joystick(stick)
 
     def set_motors(self, left_power, right_power):
-        wpilib.SmartDashboard.putNumber("Left motor value", left_power)
-        wpilib.SmartDashboard.putNumber("Right motor value", right_power)
+        wpilib.SmartDashboard.putNumber("Left motor", left_power)
+        wpilib.SmartDashboard.putNumber("Right motor", right_power)
 
         self.left_motor.set(left_power)
         self.right_motor.set(right_power)
@@ -120,8 +120,10 @@ class DriveTrain:
         elif output < -deadband:
             output = -deadband
 
-        return output, integral_history
+        wpilib.SmartDashboard.putNumber("PID error", error)
+        wpilib.SmartDashboard.putNumber("PID output", output)
 
+        return output, integral_history
 
     def drive_with_encoder_pid(self, left_encoder: wpilib.Encoder, right_encoder: wpilib.Encoder, gyro: wpilib.ADXRS450_Gyro, trigger: float):
         kP = wpilib.SmartDashboard.getNumber("kP", 0)
@@ -131,7 +133,6 @@ class DriveTrain:
         output, self.integral_history_encoder = self.pid_helper(error, kP, kI, self.integral_history_encoder, 0.05)
 
         wpilib.SmartDashboard.putNumber("PID error", gyro.getAngle() - self.auto_quick_calibration)
-        wpilib.SmartDashboard.putNumber("PID output", output)
 
         if output < 0:
             self.set_motors(trigger - output, -trigger)
@@ -147,15 +148,12 @@ class DriveTrain:
 
         output, self.integral_history = self.pid_helper(error, kP, kI, self.integral_history, 0.05)
 
-        wpilib.SmartDashboard.putNumber("PID error", error)
-        wpilib.SmartDashboard.putNumber("PID output", output)
-
         if output < 0:
             self.set_motors(trigger - output, -trigger)
         else:
             self.set_motors(trigger, -1 * (trigger + output))
 
-    def turn_with_pid(self, goal: int,gyro: wpilib.ADXRS450_Gyro):
+    def turn_with_pid(self, goal: int, gyro: wpilib.ADXRS450_Gyro):
         kP = wpilib.SmartDashboard.getNumber("kP",0)
         kI = wpilib.SmartDashboard.getNumber("kI",0)
 
@@ -164,14 +162,10 @@ class DriveTrain:
 
         output, self.integral_history_gyro = self.pid_helper(error, kP, kI, self.integral_history_gyro, 0.05, windup_limit=5)
 
-        wpilib.SmartDashboard.putNumber("PID error", error)
-        wpilib.SmartDashboard.putNumber("PID output", output)
-
         if output > 0:
             self.set_motors(-output, -output)
         else:
             self.set_motors(-output, -output)
-
 
     def drive_with_joystick(self, stick: wpilib.Joystick):
         trigger = self.get_trigger(stick)

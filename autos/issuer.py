@@ -1,3 +1,4 @@
+import robot
 import autos.center_left as cl
 import autos.center_right as cr
 import autos.cross as crss
@@ -6,32 +7,25 @@ import autos.left_switch as lswitch
 import autos.right_scale as rscale
 import autos.right_switch as rswitch
 
-def center_left(delay):
-    pass
-    #return cl.CenterLeft(delay)
+def center_left(robot: robot.Robot, delay: float):
+    return cl.CenterLeft(robot, delay)
 
-def center_right(delay):
-    pass
-    #return cr.CenterRight(delay)
+def center_right(robot: robot.Robot, delay: float):
+    return cr.CenterRight(robot, delay)
 
-def cross(delay):
-    pass
-    #return crss.Cross(delay)
+def cross(robot: robot.Robot, delay: float):
+    return crss.Cross(robot, delay)
 
-def left_scale():
-    pass
-    #return lscale.LeftScale()
+def left_scale(robot: robot.Robot, delay: float):
+    return lscale.LeftScale(robot, delay)
 
-def left_switch():
-    pass
-    #return lswitch.LeftSwitch()
+def left_switch(robot: robot.Robot, delay: float):
+    return lswitch.LeftSwitch(robot, delay)
 
-def right_scale():
-    pass
-    #return rscale.RightScale()
+def right_scale(robot: robot.Robot, delay: float):
+    return rscale.RightScale(robot, delay)
 
-def right_switch():
-    pass
-    #return rswitch.RightSwitch()
+def right_switch(robot: robot.Robot, delay: float):
+    return rswitch.RightSwitch(robot, delay)
 
 

@@ -5,8 +5,15 @@ class Climber:
         self.motor = motor
 
     def climb(self, stick: wpilib.Joystick):
-        power = stick.getRawAxis(3)
-        self.motor.set(power)
+        power = (-stick.getRawAxis(3) + 1) / 2
 
-        wpilib.SmartDashboard.putString("Climber", power)
+        if stick.getRawButton(1):
+            power = 0.5
+
+        if stick.getRawButton(2):
+            power = -power
+
+        self.motor.set(-power)
+
+        wpilib.SmartDashboard.putNumber("Climber", power)
 

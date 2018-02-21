@@ -1,12 +1,12 @@
 import wpilib
 import wpilib.drive
+import wpilib.buttons
 from drivetrain import DriveTrain
 from climber import Climber
 from arm import CubeArm
 import autos.issuer as autos
 
-
-class MyRobot(wpilib.IterativeRobot):
+class Robot(wpilib.IterativeRobot):
     def robotInit(self):
         """
         This function is called upon program startup and
@@ -20,95 +20,82 @@ class MyRobot(wpilib.IterativeRobot):
         self.right_motor    = wpilib.Spark(2)
         self.left_motor     = wpilib.Spark(3)
 
+        self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
+        self.climber    = Climber(self.elevator_motor)
+        self.cube_arm   = CubeArm(self.arm_motor)
+
         self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
-        self.left_encoder = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
+        self.left_encoder  = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
 
-        self.drivetrain  = DriveTrain(self.left_motor, self.right_motor)
-        self.climber     = Climber(self.elevator_motor)
-        self.cube_arm    = CubeArm(self.arm_motor)
+        wpilib.SmartDashboard.putString("Robot position", "right")
+        wpilib.SmartDashboard.putNumber("Autonomous delay", 0)
+        wpilib.SmartDashboard.putString("Center autonomous case", "right")
 
-        self.auto_chooser = wpilib.SendableChooser()
-        self.auto_chooser.addDefault("Right", "right")
-        self.auto_chooser.addObject("Center", "center")
-        self.auto_chooser.addObject("Left", "left")
-
-        self.delay_chooser = wpilib.SendableChooser()
-        self.delay_chooser.addDefault("0 seconds", 0)
-        self.delay_chooser.addObject("2.5 seconds", 2.5)
-        self.delay_chooser.addObject("5 seconds", 5)
-        self.delay_chooser.addObject("7.5 seconds", 7.5)
-        self.delay_chooser.addObject("10 seconds", 10)
-
-        wpilib.SmartDashboard.putData(self.auto_chooser)
-        wpilib.SmartDashboard.putData(self.delay_chooser)
+        wpilib.CameraServer.launch()
 
         self.gyro = wpilib.ADXRS450_Gyro()
-        self.auto = None
+        self.auto = autos.cross(self, 0)
+
         self.auto_timer = wpilib.Timer()
         self.auto_debug = ""
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-        self.drivetrain.auto_quick_calibration = self.gyro.getAngle()
         self.auto_timer.start()
-
+        self.gyro.reset()
         self.left_encoder.reset()
         self.right_encoder.reset()
 
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
-        robot_position        = self.auto_chooser.getSelected()
-        delay                 = self.delay_chooser.getSelected()
+        robot_position        = wpilib.SmartDashboard.getNumber("Robot position", "right")
+        delay                 = wpilib.SmartDashboard.getNumber("Autonomous delay", 0)
 
-        if robot_position == "center":
-            direction = wpilib.SmartDashboard.getString("Direction", "right")
-
-            if direction == "right":
-                self.auto = autos.center_right(delay)
+        if robot_position[0].lower() == "c":
+            direction = wpilib.SmartDashboard.getString("Center autonomous case", "right")
+            if direction[0].lower() == "r":
+                self.auto = autos.center_right(self, delay)
             else:
-                self.auto = autos.center_left(delay)
+                self.auto = autos.center_left(self, delay)
 
-        elif robot_position == "right":
+        elif robot_position[0].lower() == "r":
             if game_specific_message == "RRR":
-                self.auto = autos.right_switch()
+                self.auto = autos.right_switch(self, delay)
 
             elif game_specific_message =="LRL":
-                self.auto = autos.right_scale()
+                self.auto = autos.right_scale(self, delay)
 
             elif game_specific_message == "RLR":
-                self.auto = autos.right_switch()
+                self.auto = autos.right_switch(self, delay)
 
             else:
-                self.auto = autos.cross(delay)
+                self.auto = autos.cross(self, delay)
 
-        else:
+        elif robot_position[0].lower() == "l":
             if game_specific_message == "LLL":
-                self.auto = autos.left_switch()
+                self.auto = autos.left_switch(self, delay)
 
             elif game_specific_message == "RLR":
-                self.auto = autos.left_scale()
+                self.auto = autos.left_scale(self, delay)
 
             elif game_specific_message == "LRL":
-                self.auto = autos.left_switch()
+                self.auto = autos.left_switch(self, delay)
 
             else:
-                self.auto = autos.cross(delay)
+                self.auto = autos.cross(self, delay)
+        else:
+            self.auto = autos.cross(delay)
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
-        wpilib.SmartDashboard.putNumber("Left encoder", self.left_encoder.get())
-        wpilib.SmartDashboard.putNumber("Right encoder", self.right_encoder.get())
         wpilib.SmartDashboard.putNumber("Timer", self.auto_timer.get())
         self.drivetrain.turn_with_pid(36, self.gyro)
 
-
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
-        wpilib.SmartDashboard.putNumber("Left encoder", self.left_encoder.get())
-        wpilib.SmartDashboard.putNumber("Right encoder", self.right_encoder.get())
-
         self.drivetrain.drive(self.xbox_stick)
         self.cube_arm.drive(self.flight_stick)
         self.climber.climb(self.flight_stick)
 
+
 if __name__ == "__main__":
-    wpilib.run(MyRobot)
+    wpilib.run(Robot)
