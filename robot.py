@@ -16,13 +16,13 @@ class Robot(wpilib.IterativeRobot):
         self.flight_stick = wpilib.Joystick(1)
 
         self.arm_motor      = wpilib.Spark(0)
-        self.elevator_motor = wpilib.Spark(1)
+        self.climber_motor  = wpilib.Spark(1)
         self.right_motor    = wpilib.Spark(2)
         self.left_motor     = wpilib.Spark(3)
 
         self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
-        self.climber    = Climber(self.elevator_motor)
-        self.cube_arm   = CubeArm(self.arm_motor)
+        self.climber    = Climber(self.climber_motor)
+        self.cube_arm   = CubeArm(self.arm_motor, threshold=0)
 
         self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
         self.left_encoder  = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
@@ -37,7 +37,6 @@ class Robot(wpilib.IterativeRobot):
         self.auto = autos.cross(self, 0)
 
         self.auto_timer = wpilib.Timer()
-        self.auto_debug = ""
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
@@ -47,48 +46,59 @@ class Robot(wpilib.IterativeRobot):
         self.right_encoder.reset()
 
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
-        robot_position        = wpilib.SmartDashboard.getNumber("Robot position", "right")
+        robot_position        = wpilib.SmartDashboard.getString("Robot position", "right")
         delay                 = wpilib.SmartDashboard.getNumber("Autonomous delay", 0)
 
         if robot_position[0].lower() == "c":
             direction = wpilib.SmartDashboard.getString("Center autonomous case", "right")
             if direction[0].lower() == "r":
                 self.auto = autos.center_right(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "center_right")
             else:
                 self.auto = autos.center_left(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "center_left")
 
         elif robot_position[0].lower() == "r":
             if game_specific_message == "RRR":
                 self.auto = autos.right_switch(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "right_switch")
 
             elif game_specific_message =="LRL":
                 self.auto = autos.right_scale(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "right_scale")
 
             elif game_specific_message == "RLR":
                 self.auto = autos.right_switch(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "right_switch")
 
             else:
                 self.auto = autos.cross(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "cross_by_right")
 
         elif robot_position[0].lower() == "l":
             if game_specific_message == "LLL":
                 self.auto = autos.left_switch(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "left_switch")
 
             elif game_specific_message == "RLR":
                 self.auto = autos.left_scale(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "left_scale")
 
             elif game_specific_message == "LRL":
                 self.auto = autos.left_switch(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "left_switch")
 
             else:
                 self.auto = autos.cross(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "cross_by_left")
         else:
             self.auto = autos.cross(delay)
+            wpilib.SmartDashboard.putString("Selected auton", "cross_by_default")
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous mode."""
         wpilib.SmartDashboard.putNumber("Timer", self.auto_timer.get())
-        self.drivetrain.turn_with_pid(36, self.gyro)
+        self.auto.drive()
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""

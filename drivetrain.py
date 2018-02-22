@@ -105,6 +105,13 @@ class DriveTrain:
         self.left_motor.set(left_power)
         self.right_motor.set(right_power)
 
+    def set_motors_fixed(self, left_power, right_power):
+        wpilib.SmartDashboard.putNumber("Left motor", left_power)
+        wpilib.SmartDashboard.putNumber("Right motor", right_power)
+
+        self.left_motor.set(left_power)
+        self.right_motor.set(-right_power)
+
     @staticmethod
     def pid_helper(error, kP, kI, integral_history, deadband, windup_limit=None):
         if windup_limit:
@@ -125,20 +132,6 @@ class DriveTrain:
 
         return output, integral_history
 
-    def drive_with_encoder_pid(self, left_encoder: wpilib.Encoder, right_encoder: wpilib.Encoder, gyro: wpilib.ADXRS450_Gyro, trigger: float):
-        kP = wpilib.SmartDashboard.getNumber("kP", 0)
-        kI = wpilib.SmartDashboard.getNumber("kI", 0)
-
-        error  = left_encoder.get() - right_encoder.get()
-        output, self.integral_history_encoder = self.pid_helper(error, kP, kI, self.integral_history_encoder, 0.05)
-
-        wpilib.SmartDashboard.putNumber("PID error", gyro.getAngle() - self.auto_quick_calibration)
-
-        if output < 0:
-            self.set_motors(trigger - output, -trigger)
-        else:
-            self.set_motors(trigger, -1 * (trigger + output))
-
     def drive_with_gyro_pid(self, gyro: wpilib.ADXRS450_Gyro, trigger: float):
         kP = 0.26
         kI = 0.015
@@ -153,19 +146,19 @@ class DriveTrain:
         else:
             self.set_motors(trigger, -1 * (trigger + output))
 
-    def turn_with_pid(self, goal: int, gyro: wpilib.ADXRS450_Gyro):
-        kP = wpilib.SmartDashboard.getNumber("kP",0)
-        kI = wpilib.SmartDashboard.getNumber("kI",0)
+    def turn_with_pid(self, gyro: wpilib.ADXRS450_Gyro, goal: float):
+        kP = 0.12
+        kI = 0.33
 
         angle = gyro.getAngle() - self.auto_quick_calibration
         error = angle - goal
 
-        output, self.integral_history_gyro = self.pid_helper(error, kP, kI, self.integral_history_gyro, 0.05, windup_limit=5)
+        output, self.integral_history_gyro = self.pid_helper(error, kP, kI, self.integral_history_gyro, 0.6, windup_limit=2)
 
         if output > 0:
-            self.set_motors(-output, -output)
+            self.set_motors_fixed(output, -output)
         else:
-            self.set_motors(-output, -output)
+            self.set_motors_fixed(output, -output)
 
     def drive_with_joystick(self, stick: wpilib.Joystick):
         trigger = self.get_trigger(stick)
