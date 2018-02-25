@@ -6,8 +6,9 @@ class Climber:
 
     def climb(self, stick: wpilib.Joystick):
         power = 0
+
         if stick.getRawButton(1):
-            power = 0.5
+            power = 0.8
 
         if stick.getRawButton(2):
             power = -power

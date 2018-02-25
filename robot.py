@@ -22,7 +22,7 @@ class Robot(wpilib.IterativeRobot):
 
         self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
         self.climber    = Climber(self.climber_motor)
-        self.cube_arm   = CubeArm(self.arm_motor, threshold=0)
+        self.cube_arm   = CubeArm(self.arm_motor, threshold=0.0)
 
         self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
         self.left_encoder  = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
@@ -103,7 +103,7 @@ class Robot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         self.drivetrain.drive(self.xbox_stick)
-        self.cube_arm.drive(self.flight_stick)
+        self.cube_arm.arm_power(self.flight_stick)
         self.climber.climb(self.flight_stick)
 
 

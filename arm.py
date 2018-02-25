@@ -2,12 +2,12 @@ import wpilib
 from wpilib.command import Subsystem
 
 class CubeArm(Subsystem):
-    def __init__(self, motor: wpilib.PWMSpeedController, threshold=0.5):
+    def __init__(self, motor: wpilib., threshold=0):
         self.motor = motor
         self.open  = False
         self.was_pressed = False
         self.threshold = threshold
-        self.motor.set(-self.threshold)
+        self.motor.set(self.threshold)
         wpilib.SmartDashboard.putBoolean("CubeArm", False)
 
     def is_open(self):
@@ -27,7 +27,7 @@ class CubeArm(Subsystem):
 
     def toggle(self):
         if self.open:
-            self.motor.set(-self.threshold)
+            self.motor.set(0)
             self.open = False
             wpilib.SmartDashboard.putBoolean("CubeArm", False)
         else:
@@ -44,3 +44,5 @@ class CubeArm(Subsystem):
                 self.was_pressed = True
         else:
             self.was_pressed = False
+
+
