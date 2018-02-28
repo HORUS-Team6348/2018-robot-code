@@ -10,6 +10,9 @@ class Climber:
         if stick.getRawButton(1):
             power = 0.8
 
+        elif stick.getRawButton(3):
+            power = 0.5
+
         if stick.getRawButton(2):
             power = -power
 

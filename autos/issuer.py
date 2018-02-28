@@ -27,4 +27,24 @@ def right_scale(robot, delay: float):
 def right_switch(robot, delay: float):
     return rswitch.RightSwitch(robot, delay)
 
+def is_valid_auto(auto_str: str) -> bool:
+    if auto_str in ['center_right', 'center_left', 'left_scale', 'left_switch', 'right_scale', 'right_switch', 'cross']:
+        return True
+    else:
+        return False
 
+def fetch_auto(auto_str: str, robot, delay):
+    if auto_str == 'center_right':
+        return auto.center_right(robot, delay)
+    elif auto_str == 'center_left':
+        return auto.center_left(robot, delay)
+    elif auto_str == 'left_scale':
+        return auto.left_scale(robot, delay)
+    elif auto_str == 'left_switch':
+        return auto.left_switch(robot, delay)
+    elif auto_str == 'right_scale':
+        return auto.right_scale(robot, delay)
+    elif auto_str == 'right_switch':
+        return auto.right_switch(robot, delay)
+    else:
+        return auto.cross(robot, delay)

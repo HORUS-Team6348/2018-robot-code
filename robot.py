@@ -1,10 +1,10 @@
-import wpilib
-import wpilib.drive
-import wpilib.buttons
 from drivetrain import DriveTrain
+import autos.issuer as autos
 from climber import Climber
 from arm import CubeArm
-import autos.issuer as autos
+import wpilib.buttons
+import wpilib.drive
+import wpilib
 
 class Robot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -33,10 +33,10 @@ class Robot(wpilib.IterativeRobot):
 
         wpilib.CameraServer.launch()
 
+        self.auto_timer = wpilib.Timer()
         self.gyro = wpilib.ADXRS450_Gyro()
         self.auto = autos.cross(self, 0)
 
-        self.auto_timer = wpilib.Timer()
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
@@ -48,8 +48,11 @@ class Robot(wpilib.IterativeRobot):
         game_specific_message = wpilib.DriverStation.getInstance().getGameSpecificMessage()
         robot_position        = wpilib.SmartDashboard.getString("Robot position", "right")
         delay                 = wpilib.SmartDashboard.getNumber("Autonomous delay", 0)
+        auto_override        = wpilib.SmartDashboard.getString("Autonomous override", "none")
 
-        if robot_position[0].lower() == "c":
+        if auto_override != "none" and autos.is_valid_auto(auto_override):
+            self.auto = autos.fetch_auto(auto_override, self, delay)
+        elif robot_position[0].lower() == "c":
             direction = wpilib.SmartDashboard.getString("Center autonomous case", "right")
             if direction[0].lower() == "r":
                 self.auto = autos.center_right(self, delay)
@@ -57,37 +60,29 @@ class Robot(wpilib.IterativeRobot):
             else:
                 self.auto = autos.center_left(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "center_left")
-
         elif robot_position[0].lower() == "r":
             if game_specific_message == "RRR":
                 self.auto = autos.right_switch(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "right_switch")
-
             elif game_specific_message =="LRL":
                 self.auto = autos.right_scale(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "right_scale")
-
             elif game_specific_message == "RLR":
                 self.auto = autos.right_switch(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "right_switch")
-
             else:
                 self.auto = autos.cross(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "cross_by_right")
-
         elif robot_position[0].lower() == "l":
             if game_specific_message == "LLL":
                 self.auto = autos.left_switch(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "left_switch")
-
             elif game_specific_message == "RLR":
                 self.auto = autos.left_scale(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "left_scale")
-
             elif game_specific_message == "LRL":
                 self.auto = autos.left_switch(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "left_switch")
-
             else:
                 self.auto = autos.cross(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "cross_by_left")
@@ -103,7 +98,7 @@ class Robot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         self.drivetrain.drive(self.xbox_stick)
-        self.cube_arm.arm_power(self.flight_stick)
+        self.cube_arm.drive(self.flight_stick)
         self.climber.climb(self.flight_stick)
 
 
