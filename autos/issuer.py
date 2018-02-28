@@ -35,16 +35,16 @@ def is_valid_auto(auto_str: str) -> bool:
 
 def fetch_auto(auto_str: str, robot, delay):
     if auto_str == 'center_right':
-        return auto.center_right(robot, delay)
+        return center_right(robot, delay)
     elif auto_str == 'center_left':
-        return auto.center_left(robot, delay)
+        return center_left(robot, delay)
     elif auto_str == 'left_scale':
-        return auto.left_scale(robot, delay)
+        return left_scale(robot, delay)
     elif auto_str == 'left_switch':
-        return auto.left_switch(robot, delay)
+        return left_switch(robot, delay)
     elif auto_str == 'right_scale':
-        return auto.right_scale(robot, delay)
+        return right_scale(robot, delay)
     elif auto_str == 'right_switch':
-        return auto.right_switch(robot, delay)
+        return right_switch(robot, delay)
     else:
-        return auto.cross(robot, delay)
+        return cross(robot, delay)
