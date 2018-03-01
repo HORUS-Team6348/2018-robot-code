@@ -53,7 +53,7 @@ class CenterRight:
 
         elif not self.has_driven_straight:
             if not has_encoder_crossed(self.robot.right_encoder, 20) \
-            or not has_timed_out(self.robot.auto_timer.getFPGATimestamp(), self.driving_timestamp, self.driving_timeout):
+            and not has_timed_out(self.robot.auto_timer.getFPGATimestamp(), self.driving_timestamp, self.driving_timeout):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
             else:
                 wpilib.SmartDashboard.putString("Auto stage", "turning")
