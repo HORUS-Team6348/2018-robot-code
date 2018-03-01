@@ -3,10 +3,10 @@ from wpilib.command import Subsystem
 
 class CubeArm(Subsystem):
     def __init__(self, motor: wpilib.PWMSpeedController, threshold=0):
-        self.motor = motor
+        self.motor     = motor
         self.threshold = threshold
 
-        self.open  = False
+        self.open = False
         wpilib.SmartDashboard.putBoolean("CubeArm", False)
 
         self.was_pressed = False
@@ -37,7 +37,7 @@ class CubeArm(Subsystem):
             wpilib.SmartDashboard.putBoolean("CubeArm", True)
 
     def drive(self, stick: wpilib.Joystick):
-        if stick.getRawButton(12):
+        if stick.getRawButton(1):
             if self.was_pressed:
                 return
             else:
