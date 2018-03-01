@@ -1,4 +1,5 @@
 from utils import has_encoder_crossed
+import wpilib
 
 class Cross:
     def __init__(self, robot, delay, driving_timeout=20):
@@ -15,10 +16,13 @@ class Cross:
         """
         self.driving_timeout = driving_timeout
 
+        wpilib.SmartDashboard.putString("Auto stage", "delay")
+
     def drive(self):
         if self.robot.auto_timer.get() > self.delay:
             if not has_encoder_crossed(self.robot.right_encoder, 385) \
             and self.robot.auto_timer.get() - self.delay > self.driving_timeout:
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "ended")
                 self.robot.drivetrain.stop()

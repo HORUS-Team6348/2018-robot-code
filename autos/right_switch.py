@@ -34,6 +34,8 @@ class RightSwitch:
         self.has_turned = False
         self.has_arrived = False
 
+        wpilib.SmartDashboard.putString("Auto stage", "delay")
+
         """
         A couple of timestamps obtained with the high resolution FPGA timer in the roboRIO, 
         these allow us to know with great precision the moment when a certain checkpoint 
@@ -45,6 +47,7 @@ class RightSwitch:
     def drive(self):
         if not self.has_crossed_delay:
             if self.robot.auto_timer.get() > self.delay:
+                wpilib.SmartDashboard.putString("Auto stage", "straight_drive")
                 self.has_crossed_delay = True
                 self.driving_timestamp = wpilib.Timer.getFPGATimestamp()
 
@@ -54,6 +57,7 @@ class RightSwitch:
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
                 self.robot.climber_motor.set(0.6)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "turning")
                 self.has_driven_straight = True
                 self.turning_timestamp = wpilib.Timer.getFPGATimestamp()
 
@@ -61,6 +65,7 @@ class RightSwitch:
             if not has_timed_out(wpilib.Timer.getFPGATimestamp(), self.turning_timestamp, self.turning_timeout):
                 self.robot.drivetrain.turn_with_pid(self.robot.gyro, 36.49)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "straight_drive2")
                 self.has_turned = True
                 self.robot.climber_motor.set(0)
                 self.robot.right_encoder.reset()
@@ -70,6 +75,7 @@ class RightSwitch:
             if not has_encoder_crossed(self.robot.right_encoder, 75):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.35)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "ended")
                 self.has_arrived = True
                 self.robot.drivetrain.stop()
                 #self.robot.cube_arm.open()

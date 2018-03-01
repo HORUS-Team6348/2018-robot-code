@@ -1,4 +1,5 @@
 from utils import has_encoder_crossed, has_timed_out
+import wpilib
 
 class CenterRight:
     def __init__(self, robot, delay, turning_timeout=3, driving_timeout=20):
@@ -33,6 +34,8 @@ class CenterRight:
         self.has_turned          = False
         self.has_arrived         = False
 
+        wpilib.SmartDashboard.putString("Auto stage", "delay")
+
         """
         A couple of timestamps obtained with the high resolution FPGA timer in the roboRIO, 
         these allow us to know with great precision the moment when a certain checkpoint 
@@ -44,6 +47,7 @@ class CenterRight:
     def drive(self):
         if not self.has_crossed_delay:
             if self.robot.auto_timer.get() > self.delay:
+                wpilib.SmartDashboard.putString("Auto stage", "straight_drive")
                 self.has_crossed_delay = True
                 self.driving_timestamp = self.robot.auto_timer.getFPGATimestamp()
 
@@ -52,6 +56,7 @@ class CenterRight:
             or not has_timed_out(self.robot.auto_timer.getFPGATimestamp(), self.driving_timestamp, self.driving_timeout):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "turning")
                 self.has_driven_straight = True
                 self.turning_timestamp = self.robot.auto_timer.getFPGATimestamp()
 
@@ -59,6 +64,7 @@ class CenterRight:
             if not has_timed_out(self.robot.auto_timer.getFPGATimestamp(), self.turning_timestamp, self.turning_timeout):
                 self.robot.drivetrain.turn_with_pid(self.robot.gyro, -36.49/2)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "straight_drive2")
                 self.has_turned = True
                 self.robot.right_encoder.reset()
                 self.robot.gyro.reset()
@@ -67,5 +73,6 @@ class CenterRight:
             if not has_encoder_crossed(self.robot.right_encoder, 400):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.35)
             else:
+                wpilib.SmartDashboard.putString("Auto stage", "ended")
                 self.has_arrived = True
                 self.robot.drivetrain.stop()
