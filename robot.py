@@ -22,7 +22,7 @@ class Robot(wpilib.IterativeRobot):
 
         self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
         self.climber    = Climber(self.climber_motor)
-        self.cube_arm   = CubeArm(self.arm_motor, threshold=0.0)
+        self.cube_arm   = CubeArm(self.arm_motor, power=0.45, runtime=0.9)
 
         self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
         self.left_encoder  = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
@@ -30,6 +30,7 @@ class Robot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putString("Robot position", "right")
         wpilib.SmartDashboard.putNumber("Autonomous delay", 0)
         wpilib.SmartDashboard.putString("Center autonomous case", "right")
+        wpilib.SmartDashboard.putString("Autonomous override", "none")
 
         wpilib.CameraServer.launch()
 
