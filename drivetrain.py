@@ -204,10 +204,10 @@ class DriveTrain:
         stateY = stick.getRawButton(4)
 
         if stateA:
-            return 0.30
+            return 0.55
         elif stateX:
-            return 0.50
+            return 0.60
         elif stateY:
-            return 0.70
+            return 0.65
         else:
-            return (first_trigger * 0.5) + (second_trigger * 0.5)
+            return (first_trigger * 0.45) + (second_trigger * 0.45)

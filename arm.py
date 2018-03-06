@@ -4,6 +4,18 @@ from wpilib.command import Subsystem
 class CubeArm(Subsystem):
     def __init__(self, motor: wpilib.PWMSpeedController, power=0, runtime=0):
         self.motor    = motor
+
+    def drive(self, stick: wpilib.Joystick):
+        power = (-stick.getRawAxis(3) + 1) / 2
+
+        if stick.getRawButton(12):
+            power = -power
+
+        self.motor.set(-power)
+
+        wpilib.SmartDashboard.putNumber("Arm", power)
+
+"""
         self.power    = power
         self.runtime  = runtime
 
@@ -57,4 +69,4 @@ class CubeArm(Subsystem):
         else:
             self.was_pressed = False
 
-
+"""

@@ -52,7 +52,7 @@ class LeftScale:
                 self.driving_timestamp = wpilib.Timer.getFPGATimestamp()
 
         elif not self.has_driven_straight:
-            if not has_encoder_crossed(self.robot.right_encoder, 740) \
+            if not has_encoder_crossed(self.robot.right_encoder, 720) \
             and not has_timed_out(wpilib.Timer.getFPGATimestamp(), self.driving_timestamp, self.driving_timeout):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
                 self.robot.climber_motor.set(0.7)
@@ -72,7 +72,7 @@ class LeftScale:
                 self.robot.gyro.reset()
 
         elif not self.has_arrived:
-            if not has_encoder_crossed(self.robot.right_encoder, 55):
+            if not has_encoder_crossed(self.robot.right_encoder, 10):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.35)
             else:
                 wpilib.SmartDashboard.putString("Auto stage", "ended")

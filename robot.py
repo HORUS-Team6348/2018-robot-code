@@ -22,7 +22,7 @@ class Robot(wpilib.IterativeRobot):
 
         self.drivetrain = DriveTrain(self.left_motor, self.right_motor)
         self.climber    = Climber(self.climber_motor)
-        self.cube_arm   = CubeArm(self.arm_motor, power=0.45, runtime=0.9)
+        self.cube_arm   = CubeArm(self.arm_motor, power=0.45, runtime=1.2)
 
         self.right_encoder = wpilib.Encoder(6, 7, False, wpilib.Encoder.EncodingType.k4X)
         self.left_encoder  = wpilib.Encoder(8, 9, False, wpilib.Encoder.EncodingType.k4X)
@@ -62,28 +62,16 @@ class Robot(wpilib.IterativeRobot):
                 self.auto = autos.center_left(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "center_left")
         elif robot_position[0].lower() == "r":
-            if game_specific_message == "RRR":
-                self.auto = autos.right_switch(self, delay)
-                wpilib.SmartDashboard.putString("Selected auton", "right_switch")
-            elif game_specific_message =="LRL":
+            if game_specific_message == "LRL" or game_specific_message == "RRR":
                 self.auto = autos.right_scale(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "right_scale")
-            elif game_specific_message == "RLR":
-                self.auto = autos.right_switch(self, delay)
-                wpilib.SmartDashboard.putString("Selected auton", "right_switch")
             else:
                 self.auto = autos.cross(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "cross_by_right")
         elif robot_position[0].lower() == "l":
-            if game_specific_message == "LLL":
-                self.auto = autos.left_switch(self, delay)
-                wpilib.SmartDashboard.putString("Selected auton", "left_switch")
-            elif game_specific_message == "RLR":
+            if game_specific_message == "RLR" or game_specific_message == "LLL":
                 self.auto = autos.left_scale(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "left_scale")
-            elif game_specific_message == "LRL":
-                self.auto = autos.left_switch(self, delay)
-                wpilib.SmartDashboard.putString("Selected auton", "left_switch")
             else:
                 self.auto = autos.cross(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "cross_by_left")

@@ -20,8 +20,7 @@ class Cross:
 
     def drive(self):
         if self.robot.auto_timer.get() > self.delay:
-            if not has_encoder_crossed(self.robot.right_encoder, 385) \
-            and self.robot.auto_timer.get() - self.delay > self.driving_timeout:
+            if not has_encoder_crossed(self.robot.right_encoder, 400): #385): #and self.robot.auto_timer.get() - self.delay > self.driving_timeout:
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.4)
             else:
                 wpilib.SmartDashboard.putString("Auto stage", "ended")
