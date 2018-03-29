@@ -1,72 +1,30 @@
 import wpilib
-from wpilib.command import Subsystem
+from pid import PIDController
 
-class CubeArm(Subsystem):
-    def __init__(self, motor: wpilib.PWMSpeedController, power=0, runtime=0):
-        self.motor    = motor
-
-    def drive(self, stick: wpilib.Joystick):
-        power = (-stick.getRawAxis(3) + 1) / 2
-
-        if stick.getRawButton(12):
-            power = -power
-
-        self.motor.set(-power)
-
-        wpilib.SmartDashboard.putNumber("Arm", power)
-
-"""
-        self.power    = power
-        self.runtime  = runtime
-
-        self.open        = False
-        self.running     = False
+class CubeArm:
+    def __init__(self, motor: wpilib.PWMSpeedController, encoder: wpilib.Encoder):
+        self.motor       = motor
+        self.encoder     = encoder
+        self.is_closed   = False
         self.was_pressed = False
-        self.pressed_at  = 0
+        self.arm_pid     = PIDController(kP=0, kI=0, deadband=0.5)
 
-        wpilib.SmartDashboard.putBoolean("CubeArm", False)
-
-    def is_open(self):
-        return self.open
-
-    def open(self):
-        if self.is_open():
-            return
-        else:
-            self.toggle()
-
-    def close(self):
-        if not self.is_open():
-            return
-        else:
-            self.toggle()
-
-    def toggle(self):
-        if self.open:
-            self.motor.set(-self.power)
-            self.open = False
-            self.pressed_at = wpilib.Timer.getFPGATimestamp()
-            self.running = True
-            wpilib.SmartDashboard.putBoolean("CubeArm", False)
-        else:
-            self.motor.set(self.power)
-            self.open = True
-            self.pressed_at = wpilib.Timer.getFPGATimestamp()
-            self.running = True
-            wpilib.SmartDashboard.putBoolean("CubeArm", True)
-
-    def drive(self, stick: wpilib.Joystick):
-        if self.running:
-            if (self.pressed_at + self.runtime) < wpilib.Timer.getFPGATimestamp():
-                self.motor.set(0)
-                self.running = False
-        elif stick.getRawButton(1):
+    def press(self, stick: wpilib.Joystick):
+        if stick.getRawButton(12):
             if self.was_pressed:
                 return
             else:
-                self.toggle()
+                self.is_closed   = not self.is_closed
                 self.was_pressed = True
         else:
             self.was_pressed = False
 
-"""
+        if self.is_closed:
+            target = 0
+        else:
+            target = 33
+
+        error  = self.encoder.get() - target
+        output = self.arm_pid(error)
+
+        self.motor.set(output)

@@ -1,42 +1,40 @@
 import math
 import wpilib
-
-
-def smooth_between(min, max, degrees):
-    interval = max - min
-    normalized = (max - degrees) / interval
-    return 2 * normalized - 1
+from pid import PIDController
 
 class DriveTrain:
     def __init__(self, left_motor: wpilib.PWMSpeedController, right_motor: wpilib.PWMSpeedController):
         self.left_motor = left_motor
         self.right_motor = right_motor
 
-        self.integral_history = 0
-        self.integral_history_encoder = 0
-        self.integral_history_gyro = 0
-        self.auto_quick_calibration = 0
+        self.straight_drive_pid  = PIDController(kP=0.26, kI=0.015, deadband=0.05)
+        self.rotate_to_angle_pid = PIDController(kP=0.12, kI=0.33, deadband=0.6, windup_limit=2)
 
+    @staticmethod
+    def smooth_between(min, max, degrees):
+        interval = max - min
+        normalized = (max - degrees) / interval
+        return 2 * normalized - 1
 
     def get_left_motor(self, degrees, gatillo):
         if degrees <= 90:
             return gatillo
         elif degrees <= 180:
-            return smooth_between(90, 180, degrees) * gatillo
+            return self.smooth_between(90, 180, degrees) * gatillo
         elif degrees <= 270:
             return -1 * gatillo
         elif degrees <= 360:
-            return smooth_between(360, 270, degrees) * gatillo
+            return self.smooth_between(360, 270, degrees) * gatillo
         else:
             return 0
 
     def get_right_motor(self, degrees, gatillo):
         if degrees <= 90:
-            return -1 * smooth_between(90, 0, degrees) * gatillo
+            return -1 * self.smooth_between(90, 0, degrees) * gatillo
         elif degrees <= 180:
             return -1 * gatillo
         elif degrees <= 270:
-            return -1 * smooth_between(180, 270, degrees) * gatillo
+            return -1 * self.smooth_between(180, 270, degrees) * gatillo
         elif degrees <= 360:
             return gatillo
         else:
@@ -112,34 +110,11 @@ class DriveTrain:
         self.left_motor.set(left_power)
         self.right_motor.set(-right_power)
 
-    @staticmethod
-    def pid_helper(error, kP, kI, integral_history, deadband, windup_limit=None):
-        if windup_limit:
-            if abs(error) < windup_limit:
-                integral_history += error * 0.020
-        else:
-            integral_history += error * 0.020
-
-        output = (kP * error) + (kI * integral_history)
-
-        if output > deadband:
-            output = deadband
-        elif output < -deadband:
-            output = -deadband
-
-        wpilib.SmartDashboard.putNumber("PID error", error)
-        wpilib.SmartDashboard.putNumber("PID output", output)
-
-        return output, integral_history
-
     def drive_with_gyro_pid(self, gyro: wpilib.ADXRS450_Gyro, trigger: float):
-        kP = 0.26
-        kI = 0.015
-
-        angle = gyro.getAngle() - self.auto_quick_calibration
+        angle = gyro.getAngle()
         error = -angle
 
-        output, self.integral_history = self.pid_helper(error, kP, kI, self.integral_history, 0.05)
+        output = self.straight_drive_pid.get_output(error)
 
         if output < 0:
             self.set_motors(trigger - output, -trigger)
@@ -147,13 +122,10 @@ class DriveTrain:
             self.set_motors(trigger, -1 * (trigger + output))
 
     def turn_with_pid(self, gyro: wpilib.ADXRS450_Gyro, goal: float):
-        kP = 0.12
-        kI = 0.33
-
-        angle = gyro.getAngle() - self.auto_quick_calibration
+        angle = gyro.getAngle()
         error = angle - goal
 
-        output, self.integral_history_gyro = self.pid_helper(error, kP, kI, self.integral_history_gyro, 0.6, windup_limit=2)
+        output = self.rotate_to_angle_pid(error)
 
         if output > 0:
             self.set_motors_fixed(output, -output)
