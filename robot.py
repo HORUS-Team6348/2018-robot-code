@@ -6,6 +6,7 @@ import wpilib.buttons
 import wpilib.drive
 import wpilib
 
+
 class Robot(wpilib.IterativeRobot):
     def robotInit(self):
         """
@@ -37,7 +38,6 @@ class Robot(wpilib.IterativeRobot):
         self.gyro = wpilib.ADXRS450_Gyro()
         self.auto = autos.cross(self, 0)
 
-
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
         self.auto_timer.start()
@@ -65,16 +65,16 @@ class Robot(wpilib.IterativeRobot):
                 wpilib.SmartDashboard.putString("Selected auton", "center_left")
 
         elif robot_position[0].lower() == "r":
-            if game_specific_message == "LRL" or game_specific_message == "RRR":
-                self.auto = autos.right_scale(self, delay)
-                wpilib.SmartDashboard.putString("Selected auton", "right_scale")
+            if game_specific_message == "RRR" or game_specific_message == "RLR":
+                self.auto = autos.right_switch(self, delay)
+                wpilib.SmartDashboard.putString("Selected auton", "right_switch")
             else:
                 self.auto = autos.cross(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "cross_by_right")
 
         elif robot_position[0].lower() == "l":
-            if game_specific_message == "RLR" or game_specific_message == "LLL":
-                self.auto = autos.left_scale(self, delay)
+            if game_specific_message == "LRL" or game_specific_message == "LLL":
+                self.auto = autos.left_switch(self, delay)
                 wpilib.SmartDashboard.putString("Selected auton", "left_scale")
             else:
                 self.auto = autos.cross(self, delay)

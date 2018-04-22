@@ -72,7 +72,7 @@ class LeftSwitch:
                 self.robot.gyro.reset()
 
         elif not self.has_arrived:
-            if not has_encoder_crossed(self.robot.right_encoder, 75):
+            if not has_encoder_crossed(self.robot.right_encoder, 10):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.35)
             else:
                 wpilib.SmartDashboard.putString("Auto stage", "ended")

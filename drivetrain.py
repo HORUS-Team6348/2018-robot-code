@@ -7,8 +7,8 @@ class DriveTrain:
         self.left_motor = left_motor
         self.right_motor = right_motor
 
-        self.straight_drive_pid  = PIDController(kP=0.26, kI=0.015, deadband=0.05)
-        self.rotate_to_angle_pid = PIDController(kP=0.12, kI=0.33, deadband=0.6, windup_limit=2)
+        self.straight_drive_pid  = PIDController(kP=0.26, kI=0.015, deadband=0.05, subsystem="Drivetrain")
+        self.rotate_to_angle_pid = PIDController(kP=0.12, kI=0.33, deadband=0.6, windup_limit=2, subsystem="Drivetrain")
 
     @staticmethod
     def smooth_between(min, max, degrees):
@@ -125,7 +125,7 @@ class DriveTrain:
         angle = gyro.getAngle()
         error = angle - goal
 
-        output = self.rotate_to_angle_pid(error)
+        output = self.rotate_to_angle_pid.get_output(error)
 
         if output > 0:
             self.set_motors_fixed(output, -output)

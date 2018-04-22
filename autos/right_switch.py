@@ -1,6 +1,7 @@
 from utils import has_encoder_crossed, has_timed_out
 import wpilib
 
+
 class RightSwitch:
     def __init__(self, robot, delay, turning_timeout=3, driving_timeout=20):
         self.robot = robot
@@ -72,7 +73,7 @@ class RightSwitch:
                 self.robot.gyro.reset()
 
         elif not self.has_arrived:
-            if not has_encoder_crossed(self.robot.right_encoder, 75):
+            if not has_encoder_crossed(self.robot.right_encoder, 10):
                 self.robot.drivetrain.drive_with_gyro_pid(self.robot.gyro, 0.35)
             else:
                 wpilib.SmartDashboard.putString("Auto stage", "ended")

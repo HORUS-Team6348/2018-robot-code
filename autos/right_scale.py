@@ -1,6 +1,7 @@
 from utils import has_encoder_crossed, has_timed_out
 import wpilib
 
+
 class RightScale:
     def __init__(self, robot, delay, turning_timeout=3, driving_timeout=14):
         self.robot = robot
